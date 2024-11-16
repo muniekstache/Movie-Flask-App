@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Movies List</h1>
+
+    <!-- Displaying all movies ... -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Year</th>
+                <th>Oscars Won</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+            <tr>
+                <td>{{ movie.id }}</td>
+                <td>{{ movie.name }}</td>
+                <td>{{ movie.year }}</td>
+                <td>{{ movie.oscars }}</td>
+                <td class="action-buttons">
+                    <!-- Edit and Delete Buttons -->
+                    <a href="{{ url_for('add_movie', id=movie.id) }}">Edit</a>
+                    <form action="{{ url_for('delete_movie', id=movie.id) }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No movies found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Link to add a new movie -->
+    <a href="{{ url_for('add_movie') }}">Add a New Movie</a>
+</body>
+</html>
