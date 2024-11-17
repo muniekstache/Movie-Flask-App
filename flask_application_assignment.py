@@ -29,12 +29,27 @@ with app.app_context():
 
 @app.route('/', methods=['GET'])
 def index():
+    """
+    Route: '/'
+    Methods: GET
+    Purpose: Display all movies.
+    Reasoning:
+        - Uses GET to safely retrieve data without modifying server state.
+    """
     # Get all movies from the database
     movies = Movie.query.all()
     return render_template('index.html', movies=movies)
 
 @app.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():
+    """
+    Route: '/add_movie'
+    Methods: GET, POST
+    Purpose: Add a new movie or edit an existing one.
+    Reasoning:
+        - GET to display the form for adding/editing.
+        - POST to submit form data and modify the database.
+    """
     movie = None
 
     if request.method == 'POST':
@@ -74,6 +89,14 @@ def add_movie():
 
 @app.route('/delete_movie/<int:id>', methods=['POST'])
 def delete_movie(id):
+    """
+    Route: '/delete_movie/<int:id>'
+    Methods: POST
+    Purpose: Delete a movie by ID.
+    Reasoning:
+        - POST is used to modify server state by deleting data.
+        - HTML forms don't support DELETE, so POST is used.
+    """
     # Get the movie by ID
     movie = Movie.query.get_or_404(id)
     
