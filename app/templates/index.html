@@ -40,10 +40,12 @@
                 <td colspan="5">No movies found.</td>
             </tr>
             {% endfor %}
+            <tr>
+                <td colspan="5" class="add-movie-row">
+                    <a href="{{ url_for('add_movie') }}" class="add-button" title="Add a New Movie">+</a>
+                </td>
+            </tr>
         </tbody>
     </table>
-
-    <!-- Link to add a new movie -->
-    <a href="{{ url_for('add_movie') }}">Add a New Movie</a>
 </body>
 </html>
