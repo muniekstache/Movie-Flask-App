@@ -1,6 +1,7 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from app.models import Movie
 from app import app, db
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -41,6 +42,9 @@ def add_movie():
                 movie.year = request.form['year']
                 movie.oscars = request.form['oscars']
 
+                db.session.commit()
+                flash('Movie updated successfully!', 'success')
+
             else:
                 return "Movie not found.", 404
         else:
@@ -51,9 +55,9 @@ def add_movie():
                 oscars=request.form['oscars']
             )
             db.session.add(movie)
+            db.session.commit()
+            flash('Movie added successfully!', 'success')
 
-        # Add and Commit changes to the database for both update and add
-        db.session.commit()
         return redirect(url_for('index'))
 
     # Check if editing an existing movie via query parameter - pass to add values in add_movie page (optional)
@@ -81,6 +85,8 @@ def delete_movie(id):
         # Delete the movie from the database
         db.session.delete(movie)
         db.session.commit()
+        flash('Movie deleted successfully!', 'success')
         return redirect(url_for('index'))
     except:
+        flash('There was a problem deleting that movie.', 'danger')
         return "There was a problem deleting that movie."

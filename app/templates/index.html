@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movies</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Movies List{% endblock %}
+
+{% block content %}
     <h1>Movies List</h1>
 
     <!-- Displaying all movies ... -->
@@ -47,5 +42,4 @@
             </tr>
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}
