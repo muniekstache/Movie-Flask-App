@@ -4,6 +4,7 @@ from app.forms import LoginForm, RegistrationForm
 from app import app, db
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
+import sqlalchemy as sa
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -12,7 +13,8 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = db.session.scalar(
+            sa.select(User).where(User.username == form.username.data))
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'danger')
             return redirect(url_for('login'))
@@ -54,12 +56,13 @@ def index():
     Reasoning:
         - Uses GET to safely retrieve data without modifying server state.
     """
-    # Get all movies from the database
-    movies = Movie.query.all()
+    # Get movies for the current user
+    movies = current_user.movies.order_by(Movie.id.asc()).all()
     return render_template('index.html', movies=movies)
 
 
 @app.route('/add_movie', methods=['GET', 'POST'])
+@login_required
 def add_movie():
     """
     Route: '/add_movie'
@@ -74,27 +77,27 @@ def add_movie():
     if request.method == 'POST':
         movie_id = request.form.get('id')
 
-        ## Handle updates here:
         if movie_id:
             # Fetch the movie by ID if it exists
             movie = Movie.query.get(movie_id)
-            if movie:
-                # get values for existing movie from HTML
+            if movie and movie.user_id == current_user.id:
+                # Update existing movie
                 movie.name = request.form['name']
                 movie.year = request.form['year']
                 movie.oscars = request.form['oscars']
 
                 db.session.commit()
                 flash('Movie updated successfully!', 'success')
-
             else:
-                return "Movie not found.", 404
+                flash('Movie not found or access denied.', 'danger')
+                return redirect(url_for('index'))
         else:
             # Add new movie if no ID is provided
             movie = Movie(
                 name=request.form['name'],
                 year=request.form['year'],
-                oscars=request.form['oscars']
+                oscars=request.form['oscars'],
+                user_id=current_user.id  # Associate with current user
             )
             db.session.add(movie)
             db.session.commit()
@@ -102,15 +105,19 @@ def add_movie():
 
         return redirect(url_for('index'))
 
-    # Check if editing an existing movie via query parameter - pass to add values in add_movie page (optional)
+    # Check if editing an existing movie via query parameter
     movie_id = request.args.get('id')
     if movie_id:
         movie = Movie.query.get(movie_id)
+        if movie and movie.user_id != current_user.id:
+            flash('Access denied.', 'danger')
+            return redirect(url_for('index'))
 
     return render_template('add_movie.html', movie=movie)
 
 
 @app.route('/delete_movie/<int:id>', methods=['POST'])
+@login_required
 def delete_movie(id):
     """
     Route: '/delete_movie/<int:id>'
@@ -123,6 +130,10 @@ def delete_movie(id):
     # Get the movie by ID
     movie = Movie.query.get_or_404(id)
 
+    if movie.user_id != current_user.id:
+        flash('Access denied.', 'danger')
+        return redirect(url_for('index'))
+
     try:
         # Delete the movie from the database
         db.session.delete(movie)
@@ -131,4 +142,4 @@ def delete_movie(id):
         return redirect(url_for('index'))
     except:
         flash('There was a problem deleting that movie.', 'danger')
-        return "There was a problem deleting that movie."
+        return redirect(url_for('index'))
