@@ -22,11 +22,10 @@ A simple Flask web application that allows users to register, log in, and manage
 1. **Clone the Repository**
 
    ```sh
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/muniekstache/Movie-Flask-App.git
+   cd flask_databse_as1
    ```
 
-   Replace `<repository-url>` with the URL of your repository and `<repository-directory>` with the directory name.
 
 2. **Create a Virtual Environment**
 
@@ -189,7 +188,8 @@ movies_app/
 │           └── styles.css
 ├── documentation/
 │   ├── error_403.png
-│   └── error_404.png
+│   ├── error_404.png
+│   └── error_500.png
 ├── migrations/
 │   └── ... (migration files)
 ├── movies.py
