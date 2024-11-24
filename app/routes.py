@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, abort
 from app.models import Movie, User
 from app.forms import LoginForm, RegistrationForm
 from app import app, db
@@ -89,8 +89,7 @@ def add_movie():
                 db.session.commit()
                 flash('Movie updated successfully!', 'success')
             else:
-                flash('Movie not found or access denied.', 'danger')
-                return redirect(url_for('index'))
+                abort(403)
         else:
             # Add new movie if no ID is provided
             movie = Movie(
@@ -109,9 +108,10 @@ def add_movie():
     movie_id = request.args.get('id')
     if movie_id:
         movie = Movie.query.get(movie_id)
-        if movie and movie.user_id != current_user.id:
-            flash('Access denied.', 'danger')
-            return redirect(url_for('index'))
+        if not movie:
+            abort(404)  # Movie not found
+        if movie.user_id != current_user.id:
+            abort(403)  # Access denied
 
     return render_template('add_movie.html', movie=movie)
 
@@ -131,8 +131,7 @@ def delete_movie(id):
     movie = Movie.query.get_or_404(id)
 
     if movie.user_id != current_user.id:
-        flash('Access denied.', 'danger')
-        return redirect(url_for('index'))
+        abort(403)
 
     try:
         # Delete the movie from the database
@@ -140,6 +139,19 @@ def delete_movie(id):
         db.session.commit()
         flash('Movie deleted successfully!', 'success')
         return redirect(url_for('index'))
-    except:
-        flash('There was a problem deleting that movie.', 'danger')
-        return redirect(url_for('index'))
+    except Exception:
+        db.session.rollback()
+        abort(500)  # Internal server error
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(403)
+def forbidden_error(error):
+    return render_template('errors/403.html'), 403
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('errors/500.html'), 500
