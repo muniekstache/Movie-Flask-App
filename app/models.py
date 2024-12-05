@@ -114,6 +114,7 @@ class Movie(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(100), nullable=False)
     year: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
     oscars: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
+    genre: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), nullable=True)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     user: so.Mapped['User'] = so.relationship('User', back_populates='movies')
 
@@ -129,6 +130,7 @@ class Movie(db.Model):
             'name': self.name,
             'year': self.year,
             'oscars': self.oscars,
+            'genre': self.genre,
             'user_id': self.user_id,
             '_links': {
                 'self': url_for('api.get_movie', id=self.id, _external=True),
@@ -144,7 +146,7 @@ class Movie(db.Model):
         Args:
             data (dict): A dictionary containing movie data.
         """
-        for field in ['name', 'year', 'oscars']:
+        for field in ['name', 'year', 'oscars', 'genre']:
             if field in data:
                 setattr(self, field, data[field])
 

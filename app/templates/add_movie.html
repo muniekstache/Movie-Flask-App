@@ -28,6 +28,11 @@
             <input type="number" id="oscars" name="oscars" value="{{ movie.oscars if movie else '' }}" required><br><br>
         </div>
 
+        <div class="form-group">
+            <label for="genre">Genre (Optional):</label><br>
+            <input type="text" id="genre" name="genre" value="{{ movie.genre if movie else '' }}"><br><br>
+        </div>
+
         <button type="submit">{{ 'Update Movie' if movie else 'Add Movie' }}</button>
     </form>
 

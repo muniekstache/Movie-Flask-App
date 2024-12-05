@@ -4,7 +4,7 @@ import uuid
 # Base URL of the Flask API
 BASE_URL = 'http://localhost:5000/api'
 
-# Generate a unique username and email using UUID to prevent conflicts when running this test script multiple times.
+# Generate a unique username and email using UUID to prevent conflicts
 unique_id = str(uuid.uuid4())[:8]  # Shorten UUID for simplicity
 USERNAME = f'user_{unique_id}'
 EMAIL = f'user_{unique_id}@example.com'
@@ -54,7 +54,7 @@ def obtain_token():
         print('❌ Unexpected error during token retrieval:', response.text)
 
 
-def create_movie(token):
+def create_movie(token, name, year, oscars, genre=None):
     """
     Creates a new movie by sending a POST request to /api/movies with the provided token.
     """
@@ -63,10 +63,12 @@ def create_movie(token):
         'Authorization': f'Bearer {token}'
     }
     payload = {
-        'name': 'Inception',
-        'year': 2010,
-        'oscars': 4
+        'name': name,
+        'year': year,
+        'oscars': oscars
     }
+    if genre:
+        payload['genre'] = genre
     response = requests.post(url, json=payload, headers=headers)
 
     if response.status_code == 201:
@@ -95,7 +97,10 @@ def get_movies(token):
     if response.status_code == 200:
         movies = response.json()['movies']
         print('✅ Retrieved movies successfully.')
-        print('Movies:', movies)
+        for movie in movies:
+            genre = movie.get('genre', 'N/A')
+            print(
+                f"ID: {movie['id']}, Name: {movie['name']}, Year: {movie['year']}, Oscars: {movie['oscars']}, Genre: {genre}")
     elif response.status_code == 401:
         print('⚠️ Unauthorized:', response.json()['message'])
     else:
@@ -117,8 +122,8 @@ def main():
         print('\n⏭️ Exiting script due to token retrieval failure.')
         return
 
-    print('\n3. Creating a new movie...')
-    movie_id = create_movie(token)
+    print('\n3. Creating a new movie with genre...')
+    movie_id = create_movie(token, name='Inception', year=2010, oscars=4, genre='Sci-Fi')
     if not movie_id:
         print('\n⏭️ Exiting script due to movie creation failure.')
         return

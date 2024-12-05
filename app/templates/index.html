@@ -12,6 +12,7 @@
                 <th>Name</th>
                 <th>Year</th>
                 <th>Oscars Won</th>
+                <th>Genre</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                 <td>{{ movie.name }}</td>
                 <td>{{ movie.year }}</td>
                 <td>{{ movie.oscars }}</td>
+                <td>{{ movie.genre if movie.genre else 'N/A' }}</td>
                 <td class="action-buttons">
                     <!-- Edit and Delete Buttons -->
                     <a href="{{ url_for('add_movie', id=movie.id) }}">Edit</a>
@@ -32,11 +34,11 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="5">No movies found.</td>
+                <td colspan="6">No movies found.</td>
             </tr>
             {% endfor %}
             <tr>
-                <td colspan="5" class="add-movie-row">
+                <td colspan="6" class="add-movie-row">
                     <a href="{{ url_for('add_movie') }}" class="add-button" title="Add a New Movie">+</a>
                 </td>
             </tr>

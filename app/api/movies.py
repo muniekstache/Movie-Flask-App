@@ -55,7 +55,7 @@ def create_movie():
     """
     data = request.get_json() or {}
     # Validate required fields
-    required_fields = ['name', 'year', 'oscars']
+    required_fields = ['name', 'year', 'oscars', 'genre']
     for field in required_fields:
         if field not in data:
             return bad_request(f'Must include {field} field')
