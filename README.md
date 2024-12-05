@@ -164,6 +164,18 @@ The application includes custom error pages for:
 
   ![500 Internal Server Error Page](documentation/error_500.png)
 
+## Proof API Functions
+
+After Running test_api.py:
+
+- Results of script in CLI:
+
+  ![cli_test_results](documentation/test_result_api.png)
+
+- Proof of new user and movie creation reflected in front-end:
+
+  ![404 Not Found Error Page](documentation/updated_database_api.png)
+
 ## Project Structure
 
 ```
